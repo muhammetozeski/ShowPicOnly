@@ -11,5 +11,5 @@ https://i.ibb.co/ggXz8RX/image.png
 ![image](https://i.ibb.co/qWD6rfC/image.png)
 https://i.ibb.co/qWD6rfC/image.png
 
-![image](https://i.ibb.co/8djkCfx/image.png)
-https://i.ibb.co/8djkCfx/image.png
+![image](https://i.ibb.co/z6NXGXX/image.png)
+https://i.ibb.co/z6NXGXX/image.png
