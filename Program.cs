@@ -1,22 +1,15 @@
-using System.Runtime.CompilerServices;
+namespace ShowPicOnly;
 
-namespace ShowPicOnly
+static class Program
 {
-    internal static class Program
+    /// <summary>
+    /// Opens the picture window and returns when it is closed.
+    /// </summary>
+    /// <param name="arguments">Command line arguments. The first one, when given, is the path of the image file to show.</param>
+    [STAThread]
+    static void Main(string[] arguments)
     {
-        public static string[] args { get; private set; }
-        /// <summary>
-        ///  The main entry point for the application.
-        /// </summary>
-        [STAThread]
-        static void Main(string[] args)
-        {
-            Program.args = args;
-            // To customize application configuration such as set high DPI settings or default font,
-            // see https://aka.ms/applicationconfiguration.
-            ApplicationConfiguration.Initialize();
-            Application.EnableVisualStyles();
-            Application.Run(new Form1());
-        }
+        ApplicationConfiguration.Initialize();
+        Application.Run(new PictureWindow(arguments is [var imagePath, ..] ? imagePath : null));
     }
 }
