@@ -7,6 +7,23 @@
     <UseWindowsForms>true</UseWindowsForms>
     <ImplicitUsings>enable</ImplicitUsings>
     <ApplicationIcon>Resources\icon.ico</ApplicationIcon>
+    <Version>1.1.0</Version>
+  </PropertyGroup>
+
+  <!-- Publish settings. Publish.ps1 builds both release executables with them. -->
+  <PropertyGroup>
+    <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
+  </PropertyGroup>
+
+  <!-- Framework-dependent executable: a single file with ReadyToRun code. -->
+  <PropertyGroup Condition="'$(PublishAot)' != 'true'">
+    <PublishSingleFile>true</PublishSingleFile>
+    <PublishReadyToRun>true</PublishReadyToRun>
+  </PropertyGroup>
+
+  <!-- Portable executable: Native AOT. Windows Forms is not supported with trimming, so the SDK stops the build unless this is set. -->
+  <PropertyGroup Condition="'$(PublishAot)' == 'true'">
+    <_SuppressWinFormsTrimError>true</_SuppressWinFormsTrimError>
   </PropertyGroup>
 
 </Project>
