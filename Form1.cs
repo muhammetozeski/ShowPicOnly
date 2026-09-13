@@ -26,7 +26,7 @@ namespace ShowPicOnly
         Image image = null;
         Image Image { get => image; set { image = value; ImageSize = value.Size; } }
 
-        NotifyIcon notifyIcon = new NotifyIcon { Visible = false, Text = Title, Icon = Properties.Resources.icon1 };
+        NotifyIcon? notifyIcon;
 
         public Form1()
         {
@@ -73,9 +73,7 @@ namespace ShowPicOnly
             int y = Screen.PrimaryScreen.Bounds.Height / 2 - Size.Height / 2;
             Location = new Point(x, y);
 
-            SetBackgroundWithSameSize(CreateBitmapImage(IdleText));
-            SetBackgroundImageFromClipboard();
-
+            // Only the first available picture is created: the file given on the command line, then the clipboard, then the help text.
             try
             {
                 if (Program.args.Length != 0)
@@ -84,11 +82,21 @@ namespace ShowPicOnly
                     if (File.Exists(path))
                     {
                         this.Image = Image.FromFile(path);
-                        SetBackgroundWithSameSize(Image);
                     }
                 }
             }
             catch (Exception) { }
+
+            if (Image != null)
+                SetBackgroundWithSameSize(Image);
+            else
+                SetBackgroundImageFromClipboard();
+
+            if (Image == null)
+            {
+                Image = CreateBitmapImage(IdleText);
+                SetBackgroundWithSameSize(Image);
+            }
 
             ResizeBox = CreateResizeBox(this, ResizeBoxSize);
             #region assign events for resize box
@@ -97,7 +105,17 @@ namespace ShowPicOnly
             ResizeBox.MouseUp += Form1_MouseUp;
             Resize += (obj, e) => { ResizeBox.Location = RelocateResizeBox(ResizeBoxSize); };
             #endregion
-            notifyIcon.MouseClick += NotifyIcon_MouseClick;
+        }
+
+        /// <summary>
+        /// Creates the notification area icon. It is created on first use because most sessions never show it.
+        /// </summary>
+        /// <returns>A hidden notification area icon that toggles the window on left click and exits on right click.</returns>
+        NotifyIcon CreateNotifyIcon()
+        {
+            var icon = new NotifyIcon { Visible = false, Text = Title, Icon = Properties.Resources.icon1 };
+            icon.MouseClick += NotifyIcon_MouseClick;
+            return icon;
         }
 
         private void NotifyIcon_MouseClick(object? sender, MouseEventArgs e)
@@ -153,6 +171,7 @@ namespace ShowPicOnly
                 if ((MouseButtons & MouseButtons.Right) == MouseButtons.Right)
                 {
                     ShowInTaskbar = !ShowInTaskbar;
+                    notifyIcon ??= CreateNotifyIcon();
                     notifyIcon.Visible = !notifyIcon.Visible;
                     bothPressed = DateTime.Now;
                 }
