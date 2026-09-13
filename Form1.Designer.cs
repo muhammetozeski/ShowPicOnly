@@ -34,8 +34,6 @@
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
-            BackgroundImage = Properties.Resources._976_700x500;
-            BackgroundImageLayout = ImageLayout.Stretch;
             ClientSize = new Size(689, 493);
             ControlBox = false;
             FormBorderStyle = FormBorderStyle.SizableToolWindow;

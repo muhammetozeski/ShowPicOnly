@@ -31,16 +31,19 @@ namespace ShowPicOnly
         public Form1()
         {
             InitializeComponent();
+
+            // Window styles are set before the handle exists. Changing Text between empty and non-empty while
+            // ControlBox is false makes WinForms destroy and recreate the window, which took about 0.65 s each time.
+            this.BackColor = Color.FromArgb(255, 250, 255);
+            this.TransparencyKey = Color.FromArgb(255, 250, 255); //nobody would use this color instead of pure white. i hope...
+            FormBorderStyle = FormBorderStyle.None;
+            Text = Title;
         }
 
         const string IdleText = "There is no any Image or text in the clipboard\nCopy an Image or text and then right click here to show it\nClick with middle mouse button to close the screen\nDrag the screen to change its location\nYou can also resize the Image";
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            this.BackColor = Color.FromArgb(255, 250, 255);
-            this.TransparencyKey = Color.FromArgb(255, 250, 255); //nobody would use this color instead of pure white. i hope...
-
-
             #region initialize picture box
             pictureBox = new PictureBox
             {
@@ -65,16 +68,10 @@ namespace ShowPicOnly
 
             Paint += Form1_Paint;
 
-            TopMost = true;
-
             //locate at right center
             int x = Screen.PrimaryScreen.Bounds.Width - Size.Width;
             int y = Screen.PrimaryScreen.Bounds.Height / 2 - Size.Height / 2;
             Location = new Point(x, y);
-
-            RemoveAppBorders();
-
-            Text = Title;
 
             SetBackgroundWithSameSize(CreateBitmapImage(IdleText));
             SetBackgroundImageFromClipboard();
@@ -232,43 +229,6 @@ namespace ShowPicOnly
                 this.Cursor = IsInResizeArea(MousePosition) ? Cursors.SizeNWSE : Cursors.Default; // Ýmleç türünü belirle
             }
         }
-
-        void RemoveAppBorders()
-        {
-            // Windows API fonksiyonlarýný tek bir fonksiyon içinde tanýmlýyoruz
-            [DllImport("user32.dll")]
-            static extern int GetWindowLong(IntPtr hWnd, int nIndex);
-
-            [DllImport("user32.dll")]
-            static extern int SetWindowLong(IntPtr hWnd, int nIndex, int dwNewLong);
-
-            [DllImport("user32.dll")]
-            static extern bool SetWindowPos(IntPtr hWnd, IntPtr hWndInsertAfter, int X, int Y, int cx, int cy, uint uFlags);
-
-            const int GWL_EXSTYLE = -20;
-            const int WS_EX_LAYERED = 0x80000;
-            const int WS_EX_TRANSPARENT = 0x20;
-            IntPtr HWND_TOPMOST = new IntPtr(-1);
-            const uint SWP_NOSIZE = 0x0001;
-            const uint SWP_NOMOVE = 0x0002;
-            const uint SWP_NOACTIVATE = 0x0010;
-
-            // Formun baþlangýç ayarlarýný yap
-            this.FormBorderStyle = FormBorderStyle.None; // Çerçeveyi kaldýrýr
-            this.ControlBox = false; // Kapatma ve küçültme düðmelerini kaldýrýr
-            this.Text = String.Empty; // Baþlýk çubuðunu kaldýrýr
-            //this.ShowInTaskbar = false; // Görev çubuðunda görünmesini engeller
-
-            // Geniþletilmiþ stil bayraklarýný al
-            int extendedStyle = GetWindowLong(this.Handle, GWL_EXSTYLE);
-
-            // Katmanlý ve þeffaf stil bayraklarýný ayarla
-            SetWindowLong(this.Handle, GWL_EXSTYLE, extendedStyle | WS_EX_LAYERED);
-
-            // Pencereyi en üstte tutma (isteðe baðlý)
-            SetWindowPos(this.Handle, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_NOACTIVATE);
-        }
-
 
         void SetBackgroundImageFromClipboard()
         {
