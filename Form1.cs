@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Drawing.Drawing2D;
 using System.Drawing.Text;
 using System.Runtime.InteropServices;
@@ -146,6 +147,7 @@ namespace ShowPicOnly
             return MouseIsOverControl(ResizeBox);
         }
 
+        DateTime bothPressed;
         private void Form1_MouseDown(object sender, MouseEventArgs e)
         {
             if ((MouseButtons & MouseButtons.Left) == MouseButtons.Left)
@@ -155,6 +157,7 @@ namespace ShowPicOnly
                 {
                     ShowInTaskbar = !ShowInTaskbar;
                     notifyIcon.Visible = !notifyIcon.Visible;
+                    bothPressed = DateTime.Now;
                 }
 
                 //relocate the window
@@ -167,7 +170,7 @@ namespace ShowPicOnly
         }
         private void Form1_MouseUp(object? sender, MouseEventArgs e)
         {
-            if (e.Button == MouseButtons.Right && (MouseButtons & MouseButtons.Left) != MouseButtons.Left)
+            if (e.Button == MouseButtons.Right && DateTime.Now - bothPressed > TimeSpan.FromSeconds(1))
             {
                 SetBackgroundImageFromClipboard();
             }
