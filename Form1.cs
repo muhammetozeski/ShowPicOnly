@@ -68,11 +68,6 @@ namespace ShowPicOnly
 
             Paint += Form1_Paint;
 
-            //locate at right center
-            int x = Screen.PrimaryScreen.Bounds.Width - Size.Width;
-            int y = Screen.PrimaryScreen.Bounds.Height / 2 - Size.Height / 2;
-            Location = new Point(x, y);
-
             // Only the first available picture is created: the file given on the command line, then the clipboard, then the help text.
             try
             {
@@ -97,6 +92,12 @@ namespace ShowPicOnly
                 Image = CreateBitmapImage(IdleText);
                 SetBackgroundWithSameSize(Image);
             }
+
+            //locate at right center
+            // Uses the size of the picture, so the window is placed after the picture is set. The top left corner stays on the screen.
+            int x = Math.Max(0, Screen.PrimaryScreen.Bounds.Width - Size.Width);
+            int y = Math.Max(0, Screen.PrimaryScreen.Bounds.Height / 2 - Size.Height / 2);
+            Location = new Point(x, y);
 
             ResizeBox = CreateResizeBox(this, ResizeBoxSize);
             #region assign events for resize box
