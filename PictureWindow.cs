@@ -68,16 +68,19 @@ sealed class PictureWindow : Form
     }
 
     /// <summary>
-    /// Shows a picture and sizes the window to the picture's original size.
+    /// Shows a picture, sizes the window to the picture's original size and disposes the picture it replaces.
     /// </summary>
     /// <param name="picture">The picture to show. Null leaves the window unchanged.</param>
     void ShowPicture(Image? picture)
     {
         if (picture is null) return;
 
+        Image? previousPicture = Picture;
         Picture = picture;
         Size = picture.Size;
         PictureBox.Image = picture;
+        // A picture loaded with Image.FromFile keeps its file locked until it is disposed.
+        if (previousPicture != picture) previousPicture?.Dispose();
 
         //locate at right center
         //int x = Screen.PrimaryScreen.Bounds.Width - Size.Width;
@@ -102,6 +105,16 @@ sealed class PictureWindow : Form
             }
         };
         return trayIcon;
+    }
+
+    /// <summary>
+    /// Removes the notification area icon when the window closes.
+    /// </summary>
+    /// <param name="eventArgs">Data of the closed event.</param>
+    protected override void OnFormClosed(FormClosedEventArgs eventArgs)
+    {
+        TrayIcon?.Dispose();
+        base.OnFormClosed(eventArgs);
     }
 
     /// <summary>
